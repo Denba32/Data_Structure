@@ -1,87 +1,150 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 
+#define MAX(a,b) (((a) > (b))? (a):(b))
+#define DEGREE 10
 
-void hanoi_tower(int n,  char one, char two, char three) 
+void hanoi_tower(int n,  char A, char B, char C) 
 {
-	if (n == 1) printf("¿øÇÑ 1À» %c ¿¡¼­ %cÀ¸·Î ¿Å±ä´Ù.\n", one, three);
+	if (n == 1) printf("ì›í•œ 1ì„ %c ì—ì„œ %cìœ¼ë¡œ ì˜®ê¸´ë‹¤.\n", A, C);
 	else {
-		// (3, A, C ,B) => ¿øÆÇ 4¸¦ A¿¡¼­ C·Î ¿Å±ä´Ù.
-		// (2, A, B, C) => ¿øÆÇ 3À» A¿¡¼­ B·Î ¿Å±ä´Ù.
-		hanoi_tower(n - 1, one, three, two);
-		printf("¿øÆÇ %dÀ» %c ¿¡¼­ %cÀ¸·Î ¿Å±ä´Ù.\n", n, one, three);
-		hanoi_tower(n - 1, three, one, two);
+		hanoi_tower(n - 1, A, C, B);
+		printf("ì›íŒ %dì„ %c ì—ì„œ %cìœ¼ë¡œ ì˜®ê¸´ë‹¤.\n", n, A, C);
+		hanoi_tower(n - 1, C, A, B);
 	}
 }
-// 0ºÎÅÍ 100±îÁöÀÇ ¼Ò¼ö¸¦ ±¸ÇÏ´Â ¸Ş¼­µå
+
+typedef struct
+{
+	int degree;
+	int coef[DEGREE];
+}polynomials;
+
+// 0ë¶€í„° 100ê¹Œì§€ì˜ ì†Œìˆ˜ë¥¼ êµ¬í•˜ëŠ” ë©”ì„œë“œ
 int Demical() 
 {
-	// ³ª´©¾î ¶³¾îÁüÀ» Ä«¿îÆÃ ÇÏ´Â ÇÊµå
+	// ë‚˜ëˆ„ì–´ ë–¨ì–´ì§ì„ ì¹´ìš´íŒ… í•˜ëŠ” í•„ë“œ
 	int count = 0;
 
-	// ¼Ò¼öÀÇ ÇÕÀ» ÀúÀåÇÏ´Â ÇÊµå
+	// ì†Œìˆ˜ì˜ í•©ì„ ì €ì¥í•˜ëŠ” í•„ë“œ
 	int result = 0;
 
-	// 0°ú 1Àº ¼Ò¼ö°¡ ¾Æ´Ï¹Ç·Î Á¦¿ÜÇÏ°í ¹İº¹¹®À¸·Î 100±îÁö 
+	// 0ê³¼ 1ì€ ì†Œìˆ˜ê°€ ì•„ë‹ˆë¯€ë¡œ ì œì™¸í•˜ê³  ë°˜ë³µë¬¸ìœ¼ë¡œ 100ê¹Œì§€ 
 	for (int i = 2; i < 101; i++) {
-		// count ÃÊ±âÈ­
+		// count ì´ˆê¸°í™”
 		count = 0;
 
-		// 0À¸·Î ¼ö¸¦ ³ª´­ ¼ö ¾ø±â¿¡ 1ºÎÅÍ ½ÃÀÛÇÏ¿© ÇØ´ç ¼ö ±îÁö ³ª´®
-		// ¼Ò¼ö´Â 1°ú ÀÚ±â ÀÚ½Å¸¸À¸·Î ³ª´©¾î ¶³¾îÁü
+		// 0ìœ¼ë¡œ ìˆ˜ë¥¼ ë‚˜ëˆŒ ìˆ˜ ì—†ê¸°ì— 1ë¶€í„° ì‹œì‘í•˜ì—¬ í•´ë‹¹ ìˆ˜ ê¹Œì§€ ë‚˜ëˆ”
+		// ì†Œìˆ˜ëŠ” 1ê³¼ ìê¸° ìì‹ ë§Œìœ¼ë¡œ ë‚˜ëˆ„ì–´ ë–¨ì–´ì§
 		for (int j = 1; j <= i; j++)
 		{
-			// ³ª´©¾î ¶³¾îÁö¸é count¸¦ 1 ¿Ã¸²
+			// ë‚˜ëˆ„ì–´ ë–¨ì–´ì§€ë©´ countë¥¼ 1 ì˜¬ë¦¼
 			if (i % j == 0) {
 				count++;
 			}
 
-			// ³ª´©¾î ¶³¾îÁö´Â È½¼ö°¡ 2 ÀÌ»óÀÏ °æ¿ì ¹İº¹¿¡¼­ ¹ş¾î³²
+			// ë‚˜ëˆ„ì–´ ë–¨ì–´ì§€ëŠ” íšŸìˆ˜ê°€ 2 ì´ìƒì¼ ê²½ìš° ë°˜ë³µì—ì„œ ë²—ì–´ë‚¨
 			if (count > 2)
 			{
 				break;
 			}
 		}
 		
-		// 2¹ø¸¸ ³ª´©¾î ¶³¾îÁú °æ¿ì result¿¡ ÇØ´ç ¼ö¸¦ ´©Àû
+		// 2ë²ˆë§Œ ë‚˜ëˆ„ì–´ ë–¨ì–´ì§ˆ ê²½ìš° resultì— í•´ë‹¹ ìˆ˜ë¥¼ ëˆ„ì 
 		if (count == 2) {
 			result += i;
 		}
 	}
-	// ÇØ´ç °á°ú result¸¦ ¹İÈ¯
+	// í•´ë‹¹ ê²°ê³¼ resultë¥¼ ë°˜í™˜
 	return result;
 }
 
-// Àç±Í ÇÔ¼ö »ç¿ë
+// ì¬ê·€ í•¨ìˆ˜ ì‚¬ìš©
 double factorial_rec(int n)
 {
 	if (n <= 1) return 1;
 	else return n * factorial_rec(n - 1);
 }
 
-// ¹İº¹¹®À» »ç¿ëÇÑ ¹İº¹ ±¸Á¶
+// ë°˜ë³µë¬¸ì„ ì‚¬ìš©í•œ ë°˜ë³µ êµ¬ì¡°
 double factorial_iter(int n)
 {
-	// ÆÑÅä¸®¾óÀÇ ±ÔÄ¢ÀÎ 1ºÎÅÍ ½ÃÀÛÇØ¼­
+	// íŒ©í† ë¦¬ì–¼ì˜ ê·œì¹™ì¸ 1ë¶€í„° ì‹œì‘í•´ì„œ
 	double result = 1;
 
-	// a¹øÂ° °ª±îÁö °è¼ÓÇØ¼­ °öÇØ°¡´Â ±¸Á¶ »ç¿ë
+	// aë²ˆì§¸ ê°’ê¹Œì§€ ê³„ì†í•´ì„œ ê³±í•´ê°€ëŠ” êµ¬ì¡° ì‚¬ìš©
 	for (int i = 1; i <= n; i++)
 	{
 		result *= i;
 	}
-
+	// 1ë¶€í„° 1, 2, 1, ë³¸ë˜ ìˆ˜, ë¦¬ì…‹ 1, 2, 1
+	// 1 2 1 3 1 2 1 4 1 2 1 
 	return result;
 }
+void hanoi_iter(int n, char A, char B, char C)
+{
+	while (n > 0)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			if (n == 1)
+			{
+				printf("ì›íŒ 1ì„ %cì—ì„œ %cìœ¼ë¡œ ì˜®ê¸´ë‹¤.\n", A, C);
+			}
 
-// ¸Ç ¸¶Áö¸· °¡Àå Å« ¿øÆÇÀ» ÃÖ¿ì¼±À¸·Î ¿Å±è
-// °¢ÀÚ ÇÏ³ª¾¿ ¿Å±â°í ´ÙÀ½ À§¿¡ ½×°í
-// 
-// ¸ŞÀÎ ½º·¹µå
-int main() {
-	int n = 20;
-	double result_rec = factorial_rec(n);
-	double result_iter = factorial_iter(n);
-	printf("Iterative factorial result: %0.f\n Recursive factorial result: %0.f", result_iter, result_rec);
+			else if (n > 1)
+			{
+				n = n - 1;
+			}
+		}
+	}
+}
+
+polynomials poly_add(polynomials A, polynomials B)
+{
+	polynomials C;
+
+	C.degree = MAX(A.degree, B.degree);
+	
+	for (int i = 0; i < C.degree +1; i++)
+	{
+		C.coef[i] = A.coef[i];
+		C.coef[i] += B.coef[i];
+	}
+
+	return C;
+}
+
+void poly_print(polynomials C)
+{
+	for (int i = C.degree; i > 0; i--)
+	{
+		if (C.coef[i] == 0)
+		{
+			continue;
+		}
+		if (C.coef[i] == 1)
+		{
+			printf("x^%d + ", i);
+			continue;
+		}
+		printf("%dx^%d + ", C.coef[i], i);
+	}
+	printf("%d\n", C.coef[0]);
+}
+
+int main() 
+{
+	polynomials A = { 3, {1, 2, 3, 4} };
+	polynomials B = { 2, {8, 2, 3} };
+
+	polynomials C = { 6, {1, 0, 9, 5, 0, 0, 7} };
+	polynomials D = { 3, {10, 1, 2, 5} };
+
+	poly_print(poly_add(A, B));
+
+	poly_print(poly_add(C, D));
+
+	getch();
 	return 0;
 }
