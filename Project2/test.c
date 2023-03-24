@@ -83,6 +83,7 @@ int main() {
 	free(a);
 	free(b);
 
+	getch();
 	return 0;
 }
 /*
