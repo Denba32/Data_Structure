@@ -1,16 +1,109 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 
-#define MAX(a,b) (((a) > (b))? (a):(b))
-#define DEGREE 10
+//#define MAX(a,b) (((a) > (b))? (a):(b))
+//#define DEGREE 10
 
-void hanoi_tower(int n,  char A, char B, char C) 
+typedef struct {
+	// 행
+	int row;
+	// 열
+	int col;
+	// 값
+	int value;
+} element;
+
+
+// 행렬 출력
+void print_matrix(element *b)
+{
+	printf("The transposed matrix is:\n");
+
+	for (int i = 1; i <= b[0].value; i++) {
+		printf("%d %d %d\n", b[i].row, b[i].col, b[i].value);
+	}
+}
+
+// 전치 메서드
+void transpose(element *a, element *b) {
+	b[0].col = a[0].row; 
+	b[0].row = a[0].col; 
+	b[0].value = a[0].value;
+	
+	int p = 1;
+
+	// 값이 있는 경우 전치를 진행
+	if (b[0].value > 0)
+	{
+		for(int i = 0; i < a[0].col; i++)
+			for (int j = 1; j <= a[0].value; j++)
+			{
+				if (a[j].col == i)
+				{
+					b[p].row = a[j].col;
+					b[p].col = a[j].row;
+					b[p].value = a[j].value;
+					p++;
+				}
+			}
+	}
+}
+
+int main() {
+	int row, col, index;
+	
+	printf("Enter the size of rows and columns, the number of non-zero terms: ");
+	// 2차원 행렬의 행, 열, 0이 아닌 항의 값을 입력
+	scanf_s("%d %d %d", &row, &col, &index);
+
+	// 항의 개수에 충분하게 +1을 한 동적 메모리 할당을 하여 생성
+	element* a = (element*)malloc(sizeof(element) * (index + 1));
+	element* b = (element*)malloc(sizeof(element) * (index + 1));
+	
+	// 행렬 크기 저장
+	a[0].row = row;
+	a[0].col = col;
+	a[0].value = index;
+
+	printf("Enter row, column, and value pairs in order:\n");
+	
+	// 0이 아닌 항의 개수 만큼 2차원 행렬에 값을 입력
+	for (int i = 1; i <= index; i++)
+	{
+		scanf_s("%d %d %d", &a[i].row, &a[i].col, &a[i].value);
+	}
+
+	// 전치 행렬 실행
+	transpose(a, b);
+
+	// 행렬 결과 출력
+	print_matrix(b);
+
+	// 동적 메모리 해제
+	free(a);
+	free(b);
+
+	return 0;
+}
+/*
+*void hanoi_tower(int n,  char A, char B, char C) 
 {
 	if (n == 1) printf("원한 1을 %c 에서 %c으로 옮긴다.\n", A, C);
 	else {
 		hanoi_tower(n - 1, A, C, B);
 		printf("원판 %d을 %c 에서 %c으로 옮긴다.\n", n, A, C);
 		hanoi_tower(n - 1, C, A, B);
+	}
+}
+
+void matrix_transpose(int A[ROWS][COLS], int B[ROWS][COLS]) 
+{
+	for (int r = 0; r < ROWS; r++)
+	{
+		for (int c = 0; c < COLS; c++)
+		{
+			B[c][r] = A[r][c];
+		}
 	}
 }
 
@@ -115,6 +208,20 @@ polynomials poly_add(polynomials A, polynomials B)
 	return C;
 }
 
+void matrix_print(int A[ROWS][COLS])
+{
+	printf("===================\n");
+	for (int r = 0; r < ROWS; r++) {
+		for (int c = 0; c < COLS; c++)
+		{
+			printf("%d ", A[r][c]);
+		}
+		printf("\n");
+	}
+
+	printf("===================\n");
+}
+
 void poly_print(polynomials C)
 {
 	for (int i = C.degree; i > 0; i--)
@@ -132,19 +239,4 @@ void poly_print(polynomials C)
 	}
 	printf("%d\n", C.coef[0]);
 }
-
-int main() 
-{
-	polynomials A = { 3, {1, 2, 3, 4} };
-	polynomials B = { 2, {8, 2, 3} };
-
-	polynomials C = { 6, {1, 0, 9, 5, 0, 0, 7} };
-	polynomials D = { 3, {10, 1, 2, 5} };
-
-	poly_print(poly_add(A, B));
-
-	poly_print(poly_add(C, D));
-
-	getch();
-	return 0;
-}
+*/
