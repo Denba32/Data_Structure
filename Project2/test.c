@@ -1,91 +1,191 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-//#define MAX(a,b) (((a) > (b))? (a):(b))
-//#define DEGREE 10
+#define MAX 10
 
+
+typedef int element;
+
+element stack[MAX] = {NULL};
+int top = -1;
+
+
+// 구조체용
 typedef struct {
-	// 행
-	int row;
-	// 열
-	int col;
-	// 값
-	int value;
-} element;
+	element data[MAX];
+	int top;
+}StackType;
 
 
-// 행렬 출력
-void print_matrix(element *b)
+// 동적배열용
+typedef struct {
+	element* data;
+	int capacity;
+	int top;
+}StackMallocType;
+
+
+
+int isEmpty(StackType *s)
 {
-	printf("The transposed matrix is:\n");
-
-	for (int i = 1; i <= b[0].value; i++) {
-		printf("%d %d %d\n", b[i].row, b[i].col, b[i].value);
-	}
+	return (s->top == -1);
 }
 
-// 전치 메서드
-void transpose(element *a, element *b) {
-	b[0].col = a[0].row; 
-	b[0].row = a[0].col; 
-	b[0].value = a[0].value;
-	
-	int p = 1;
+// 동적배열 Empty
+int isEmpty2(StackMallocType* s)
+{
+	return (s->top == -1);
+}
+int isFull(StackType* s)
+{
+	return (s->top == MAX - 1);
+}
 
-	// 값이 있는 경우 전치를 진행
-	if (b[0].value > 0)
+// 동적배열 Full
+int isFull2(StackMallocType* s)
+{
+	return (s->top == (s->capacity -1));
+}
+
+
+//		realloc(sp->data, sp->capacity)
+void Push(StackType* s, element datas)
+{
+	if (isFull(s))
 	{
-		for(int i = 0; i < a[0].col; i++)
-			for (int j = 1; j <= a[0].value; j++)
-			{
-				if (a[j].col == i)
-				{
-					b[p].row = a[j].col;
-					b[p].col = a[j].row;
-					b[p].value = a[j].value;
-					p++;
-				}
-			}
+		printf("Error, Stack is Full!");
+		return;
+	}
+	else 
+	{
+		s->data[++(s->top)] = datas;
 	}
 }
 
+// 동적 배열용 Push
+void Push2(StackMallocType* s, element item)
+{
+	if (isFull2(s))
+	{
+		printf("Error, Stack is Full!");
+		s->capacity *= 2;
+		s->data = (element*)realloc(s->data, s->capacity * sizeof(element));
+	}
+	else {
+		s->data[++(s->top)] = item;
+	}
+}
+
+
+
+element Pop(StackType* s)
+{
+	if (isEmpty(s))
+	{
+		printf("Error, Stack is Empty!");
+		return;
+	}
+	else
+	{
+		return s->data[(s->top)--];
+	}
+}
+
+element pop2(StackMallocType* s)
+{
+	if (isEmpty2(s)) {
+		printf("Error, Stack is Empty!");
+		return;
+	}
+	else {
+		return s->data[(s->top)--];
+	}
+}
+
+element peek(StackMallocType* s) {
+	if (isEmpty2(s))
+	{
+		printf("Error, Stack is Empty!");
+		return;
+	}
+	return s->data[s->top];
+}
+
+void Init(StackType* s)
+{
+	if (isEmpty(s))
+	{
+		printf("Error, Stack is Empty!");
+		return;
+	}
+
+	s->top = -1;
+}
+ 
+void InitMalloc(StackMallocType* s, int size)
+{
+	s->data = (element*)malloc(sizeof(element) * size);
+	s->capacity = size;
+	s->top = -1;
+}
 int main() {
-	int row, col, index;
 	
-	printf("Enter the size of rows and columns, the number of non-zero terms: ");
-	// 2차원 행렬의 행, 열, 0이 아닌 항의 값을 입력
-	scanf_s("%d %d %d", &row, &col, &index);
+	StackType s;	
 
-	// 항의 개수에 충분하게 +1을 한 동적 메모리 할당을 하여 생성
-	element* a = (element*)malloc(sizeof(element) * (index + 1));
-	element* b = (element*)malloc(sizeof(element) * (index + 1));
-	
-	// 행렬 크기 저장
-	a[0].row = row;
-	a[0].col = col;
-	a[0].value = index;
+	srand(time(NULL));
 
-	printf("Enter row, column, and value pairs in order:\n");
-	
-	// 0이 아닌 항의 개수 만큼 2차원 행렬에 값을 입력
-	for (int i = 1; i <= index; i++)
+	int rand_num = 0;
+
+	for (int i = 0; i < 30; i++)
 	{
-		scanf_s("%d %d %d", &a[i].row, &a[i].col, &a[i].value);
+		rand_num = rand() % 100 + 1;
+		// 짝수일 경우
+		if (rand_num % 2 == 0)
+		{
+			Push(&s, rand_num);
+			printf("정적 스택 [%d] PUSH합니다. %d \n", s.top, rand_num);
+		}
+		// 홀수일 경우
+		else
+		{
+			Pop(&s);
+			printf("정적 스택 [%d]홀수 POP합니다. %d \n", s.top, rand_num);
+		}
+	}
+	
+	srand(time(NULL));
+
+	rand_num = 0;
+
+
+	StackMallocType s2;
+
+	InitMalloc(&s2, 1);
+	
+	for (int i = 0; i < 30; i++)
+	{
+		rand_num = rand() % 100 + 1;
+		// 짝수일 경우
+		if (rand_num % 2 == 0)
+		{
+			Push2(&s2, rand_num);
+			printf("동적 배열 스택[%d] PUSH합니다. %d \n", s2.top, rand_num);
+		}
+		// 홀수일 경우
+		else
+		{
+			Pop(&s2);
+			printf("동적 배열 스택6[%d]홀수 POP합니다. %d \n" ,s2.top, rand_num);
+		}
 	}
 
-	// 전치 행렬 실행
-	transpose(a, b);
-
-	// 행렬 결과 출력
-	print_matrix(b);
-
-	// 동적 메모리 해제
-	free(a);
-	free(b);
-
+	free(&s2);
+	
 	getch();
 	return 0;
 }
+
 /*
 *void hanoi_tower(int n,  char A, char B, char C) 
 {
@@ -193,7 +293,50 @@ void hanoi_iter(int n, char A, char B, char C)
 		}
 	}
 }
+typedef struct {
+	// 행
+	int row;
+	// 열
+	int col;
+	// 값
+	int value;
+} element;
 
+
+// 행렬 출력
+void print_matrix(element *b)
+{
+	printf("The transposed matrix is:\n");
+
+	for (int i = 1; i <= b[0].value; i++) {
+		printf("%d %d %d\n", b[i].row, b[i].col, b[i].value);
+	}
+}
+
+// 전치 메서드
+void transpose(element *a, element *b) {
+	b[0].col = a[0].row;
+	b[0].row = a[0].col;
+	b[0].value = a[0].value;
+
+	int p = 1;
+
+	// 값이 있는 경우 전치를 진행
+	if (b[0].value > 0)
+	{
+		for(int i = 0; i < a[0].col; i++)
+			for (int j = 1; j <= a[0].value; j++)
+			{
+				if (a[j].col == i)
+				{
+					b[p].row = a[j].col;
+					b[p].col = a[j].row;
+					b[p].value = a[j].value;
+					p++;
+				}
+			}
+	}
+}
 polynomials poly_add(polynomials A, polynomials B)
 {
 	polynomials C;
@@ -240,4 +383,38 @@ void poly_print(polynomials C)
 	}
 	printf("%d\n", C.coef[0]);
 }
+
+	int row, col, index;
+
+	printf("Enter the size of rows and columns, the number of non-zero terms: ");
+	// 2차원 행렬의 행, 열, 0이 아닌 항의 값을 입력
+	scanf_s("%d %d %d", &row, &col, &index);
+
+	// 항의 개수에 충분하게 +1을 한 동적 메모리 할당을 하여 생성
+	element* a = (element*)malloc(sizeof(element) * (index + 1));
+	element* b = (element*)malloc(sizeof(element) * (index + 1));
+
+	// 행렬 크기 저장
+	a[0].row = row;
+	a[0].col = col;
+	a[0].value = index;
+
+	printf("Enter row, column, and value pairs in order:\n");
+
+	// 0이 아닌 항의 개수 만큼 2차원 행렬에 값을 입력
+	for (int i = 1; i <= index; i++)
+	{
+		scanf_s("%d %d %d", &a[i].row, &a[i].col, &a[i].value);
+	}
+
+	// 전치 행렬 실행
+	transpose(a, b);
+
+	// 행렬 결과 출력
+	print_matrix(b);
+	// 동적 메모리 해제
+	free(a);
+	free(b);
+
+	getch();
 */
