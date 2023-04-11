@@ -2,15 +2,33 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define MAX 10
+#define MAX 100
+#define MAZE_SIZE 10
+
+//typedef char element;
+char str[101];
+int count = 0;
+
+char maze[MAZE_SIZE][MAZE_SIZE] = {
+		{'1','1','1','1','1','1','1','1','1','1'},
+		{'e','1','0','1','0','0','0','1','0','1'},
+		{'0','0','0','1','0','0','0','1','0','1'},
+		{'0','1','0','0','0','1','1','0','0','1'},
+		{'1','0','0','0','1','0','0','0','0','1'},
+		{'1','0','0','0','1','0','0','0','0','1'},
+		{'1','0','0','0','0','0','1','0','1','1'},
+		{'1','0','1','1','1','0','1','1','0','1'},
+		{'1','1','0','0','0','0','0','0','0','x'},
+		{'1','1','1','1','1','1','1','1','1','1'}
+};
 
 
-typedef int element;
-
-element stack[MAX] = {NULL};
-int top = -1;
-
-
+typedef struct {
+	short r;
+	short c;
+}element;
+element here = { 1,0 };
+element entry = { 1,0 };
 // 구조체용
 typedef struct {
 	element data[MAX];
@@ -18,38 +36,21 @@ typedef struct {
 }StackType;
 
 
-// 동적배열용
-typedef struct {
-	element* data;
-	int capacity;
-	int top;
-}StackMallocType;
-
-
-
+// 비어있을 때
 int isEmpty(StackType *s)
 {
 	return (s->top == -1);
 }
-
-// 동적배열 Empty
-int isEmpty2(StackMallocType* s)
-{
-	return (s->top == -1);
-}
+// 가득 찼을 때
 int isFull(StackType* s)
 {
 	return (s->top == MAX - 1);
 }
-
-// 동적배열 Full
-int isFull2(StackMallocType* s)
+void Init_Stack(StackType* s)
 {
-	return (s->top == (s->capacity -1));
+	s->top = -1;
 }
 
-
-//		realloc(sp->data, sp->capacity)
 void Push(StackType* s, element datas)
 {
 	if (isFull(s))
@@ -57,27 +58,10 @@ void Push(StackType* s, element datas)
 		printf("Error, Stack is Full!");
 		return;
 	}
-	else 
-	{
+	else {
 		s->data[++(s->top)] = datas;
 	}
 }
-
-// 동적 배열용 Push
-void Push2(StackMallocType* s, element item)
-{
-	if (isFull2(s))
-	{
-		printf("Error, Stack is Full!");
-		s->capacity *= 2;
-		s->data = (element*)realloc(s->data, s->capacity * sizeof(element));
-	}
-	else {
-		s->data[++(s->top)] = item;
-	}
-}
-
-
 
 element Pop(StackType* s)
 {
@@ -86,30 +70,20 @@ element Pop(StackType* s)
 		printf("Error, Stack is Empty!");
 		return;
 	}
-	else
-	{
-		return s->data[(s->top)--];
-	}
-}
-
-element pop2(StackMallocType* s)
-{
-	if (isEmpty2(s)) {
-		printf("Error, Stack is Empty!");
-		return;
-	}
 	else {
 		return s->data[(s->top)--];
 	}
 }
 
-element peek(StackMallocType* s) {
-	if (isEmpty2(s))
+element peek(StackType* s)
+{
+	if (isEmpty(s))
 	{
 		printf("Error, Stack is Empty!");
 		return;
 	}
-	return s->data[s->top];
+
+	return s->data[(s->top)];
 }
 
 void Init(StackType* s)
@@ -122,299 +96,175 @@ void Init(StackType* s)
 
 	s->top = -1;
 }
- 
-void InitMalloc(StackMallocType* s, int size)
-{
-	s->data = (element*)malloc(sizeof(element) * size);
-	s->capacity = size;
-	s->top = -1;
-}
-int main() {
-	
-	StackType s;	
-
-	srand(time(NULL));
-
-	int rand_num = 0;
-
-	for (int i = 0; i < 30; i++)
-	{
-		rand_num = rand() % 100 + 1;
-		// 짝수일 경우
-		if (rand_num % 2 == 0)
-		{
-			Push(&s, rand_num);
-			printf("정적 스택 [%d] PUSH합니다. %d \n", s.top, rand_num);
-		}
-		// 홀수일 경우
-		else
-		{
-			Pop(&s);
-			printf("정적 스택 [%d]홀수 POP합니다. %d \n", s.top, rand_num);
-		}
-	}
-	
-	srand(time(NULL));
-
-	rand_num = 0;
-
-
-	StackMallocType s2;
-
-	InitMalloc(&s2, 1);
-	
-	for (int i = 0; i < 30; i++)
-	{
-		rand_num = rand() % 100 + 1;
-		// 짝수일 경우
-		if (rand_num % 2 == 0)
-		{
-			Push2(&s2, rand_num);
-			printf("동적 배열 스택[%d] PUSH합니다. %d \n", s2.top, rand_num);
-		}
-		// 홀수일 경우
-		else
-		{
-			Pop(&s2);
-			printf("동적 배열 스택6[%d]홀수 POP합니다. %d \n" ,s2.top, rand_num);
-		}
-	}
-
-	free(&s2);
-	
-	getch();
-	return 0;
-}
-
 /*
-*void hanoi_tower(int n,  char A, char B, char C) 
-{
-	if (n == 1) printf("원한 1을 %c 에서 %c으로 옮긴다.\n", A, C);
-	else {
-		hanoi_tower(n - 1, A, C, B);
-		printf("원판 %d을 %c 에서 %c으로 옮긴다.\n", n, A, C);
-		hanoi_tower(n - 1, C, A, B);
-	}
-}
+int Eval(char exp[]) {
+	int op1 = 0;
+	int op2 = 0;
 
-void matrix_transpose(int A[ROWS][COLS], int B[ROWS][COLS]) 
-{
-	for (int r = 0; r < ROWS; r++)
+	// string 길이 
+	int len = strlen(exp);
+	char ch;
+	StackType s;
+	Init_Stack(&s);
+
+
+	for (int i = 0; i < len; i++)
 	{
-		for (int c = 0; c < COLS; c++)
+		ch = exp[i];
+		if (ch >= '0' && ch <= '9')
 		{
-			B[c][r] = A[r][c];
+			ch = ch - '0';
+			Push(&s, ch);
+		}
+
+		// 숫자가 아닌 경우
+		else {
+			// 두 값을 가져옴
+			op2 = Pop(&s);
+			op1 = Pop(&s);
+
+			if (ch == '+') {
+				Push(&s, (op1 + op2));
+
+			}
+			else if (ch == '-')
+			{
+				Push(&s, (op1 - op2));
+
+			}
+			else if (ch == '*') {
+				Push(&s, (op1 - op2));
+
+			}
+			else if (ch == '/') {
+				Push(&s, (op1 / op2));
+
+			}
+			else {
+				printf("잘못된 기호가 들어가 있습니다\n");
+				return 0;
+			}
 		}
 	}
+	return Pop(&s);
 }
 
-typedef struct
+int prec(char op)
 {
-	int degree;
-	int coef[DEGREE];
-}polynomials;
+	switch (op) {
+	case'(':case')':return 0; break;
+	case'+':case'-':return 1; break;
+	case'*':case'/':return 2; break;
+	}
+	return -1;
+}
 
-// 0부터 100까지의 소수를 구하는 메서드
-int Demical() 
+void infix_to_postfix(char exp[]) 
 {
-	// 나누어 떨어짐을 카운팅 하는 필드
-	int count = 0;
+	int i = 0;
+	char ch, top_op;
+	int len = strlen(exp);
 
-	// 소수의 합을 저장하는 필드
-	int result = 0;
-
-	// 0과 1은 소수가 아니므로 제외하고 반복문으로 100까지 
-	for (int i = 2; i < 101; i++) {
-		// count 초기화
-		count = 0;
-
-		// 0으로 수를 나눌 수 없기에 1부터 시작하여 해당 수 까지 나눔
-		// 소수는 1과 자기 자신만으로 나누어 떨어짐
-		for (int j = 1; j <= i; j++)
-		{
-			// 나누어 떨어지면 count를 1 올림
-			if (i % j == 0) {
-				count++;
-			}
-
-			// 나누어 떨어지는 횟수가 2 이상일 경우 반복에서 벗어남
-			if (count > 2)
-			{
+	
+	StackType s;
+	Init_Stack(&s);
+	
+	for (int i = 0; i < len; i++)
+	{
+		ch = exp[i];
+		switch (ch) {
+		case '+':case'-':case'*':case'/':
+			while (!isEmpty(&s) && (prec(ch) <= prec(peek(&s)))) {
+				printf("%c", Pop(&s));
+				Push(&s, ch);
 				break;
 			}
+		case'(':
+			Push(&s, ch);
+			break;
+		case')':
+			top_op = Pop(&s);
+			while (top_op != '(') {
+				printf("%c", top_op);
+				top_op = Pop(&s);
+			}
+			break;
+			
+		default:
+			printf("%c", ch);
+			break;
 		}
+	}
+	int index = 0;
+	while (!isEmpty(&s)) {
+		str[index] = Pop(&s);
+		printf("%c", str[index]);
+		index++;	
+	}
 		
-		// 2번만 나누어 떨어질 경우 result에 해당 수를 누적
-		if (count == 2) {
-			result += i;
-		}
-	}
-	// 해당 결과 result를 반환
-	return result;
 }
 
-// 재귀 함수 사용
-double factorial_rec(int n)
-{
-	if (n <= 1) return 1;
-	else return n * factorial_rec(n - 1);
-}
-
-// 반복문을 사용한 반복 구조
-double factorial_iter(int n)
-{
-	// 팩토리얼의 규칙인 1부터 시작해서
-	double result = 1;
-
-	// a번째 값까지 계속해서 곱해가는 구조 사용
-	for (int i = 1; i <= n; i++)
-	{
-		result *= i;
-	}
-	// 1부터 1, 2, 1, 본래 수, 리셋 1, 2, 1
-	// 1 2 1 3 1 2 1 4 1 2 1 
-	return result;
-}
-void hanoi_iter(int n, char A, char B, char C)
-{
-	while (n > 0)
-	{
-		for (int i = 0; i < n; i++)
-		{
-			if (n == 1)
-			{
-				printf("원판 1을 %c에서 %c으로 옮긴다.\n", A, C);
-			}
-
-			else if (n > 1)
-			{
-				n = n - 1;
-			}
-		}
-	}
-}
-typedef struct {
-	// 행
-	int row;
-	// 열
-	int col;
-	// 값
-	int value;
-} element;
+*/
 
 
-// 행렬 출력
-void print_matrix(element *b)
-{
-	printf("The transposed matrix is:\n");
-
-	for (int i = 1; i <= b[0].value; i++) {
-		printf("%d %d %d\n", b[i].row, b[i].col, b[i].value);
+// 0 미만이거나 1 초과일 경우
+void push_loc(StackType* s, int r, int c) {
+	if (r < 0 || c < 0) return;
+	if (maze[r][c] != '1' && maze[r][c] != '.') {
+		element tmp;
+		tmp.r = r;
+		tmp.c = c;
+		Push(s, tmp);
 	}
 }
 
-// 전치 메서드
-void transpose(element *a, element *b) {
-	b[0].col = a[0].row;
-	b[0].row = a[0].col;
-	b[0].value = a[0].value;
 
-	int p = 1;
 
-	// 값이 있는 경우 전치를 진행
-	if (b[0].value > 0)
-	{
-		for(int i = 0; i < a[0].col; i++)
-			for (int j = 1; j <= a[0].value; j++)
-			{
-				if (a[j].col == i)
-				{
-					b[p].row = a[j].col;
-					b[p].col = a[j].row;
-					b[p].value = a[j].value;
-					p++;
-				}
-			}
-	}
-}
-polynomials poly_add(polynomials A, polynomials B)
+void maze_print(char maze[MAZE_SIZE][MAZE_SIZE])
 {
-	polynomials C;
-
-	C.degree = MAX(A.degree, B.degree);
-	
-	for (int i = 0; i < C.degree +1; i++)
-	{
-		C.coef[i] = A.coef[i];
-		C.coef[i] += B.coef[i];
-	}
-
-	return C;
-}
-
-void matrix_print(int A[ROWS][COLS])
-{
-	printf("===================\n");
-	for (int r = 0; r < ROWS; r++) {
-		for (int c = 0; c < COLS; c++)
-		{
-			printf("%d ", A[r][c]);
+	printf("\n");
+	for (int r = 0; r < MAZE_SIZE; r++) {
+		for (int c = 0; c < MAZE_SIZE; c++) {
+			printf("%c", maze[r][c]);
 		}
 		printf("\n");
 	}
-
-	printf("===================\n");
 }
 
-void poly_print(polynomials C)
+
+int main() 
 {
-	for (int i = C.degree; i > 0; i--)
-	{
-		if (C.coef[i] == 0)
-		{
-			continue;
+	int r, c;
+	StackType s;
+	Init(&s);
+	here = entry;
+	while (maze[here.r][here.c] != 'x') {
+		r = here.r;
+		c = here.c;
+		maze[r][c] = '.';
+		maze_print(maze);
+
+		//0 1
+		push_loc(&s, r - 1, c);
+		push_loc(&s, r + 1, c);
+		push_loc(&s, r, c - 1);
+		push_loc(&s, r, c + 1);
+
+		if (isEmpty(&s)) {
+			printf("실패\n");
+			return;
 		}
-		if (C.coef[i] == 1)
+		else
 		{
-			printf("x^%d + ", i);
-			continue;
+			here = Pop(&s);
+			if (maze[here.r][here.c] == '.') {
+				count++;
+			}
 		}
-		printf("%dx^%d + ", C.coef[i], i);
 	}
-	printf("%d\n", C.coef[0]);
+
+	printf("Success\n");
+	printf("Back count :  %d\n", count);
+
+	return 0;
 }
-
-	int row, col, index;
-
-	printf("Enter the size of rows and columns, the number of non-zero terms: ");
-	// 2차원 행렬의 행, 열, 0이 아닌 항의 값을 입력
-	scanf_s("%d %d %d", &row, &col, &index);
-
-	// 항의 개수에 충분하게 +1을 한 동적 메모리 할당을 하여 생성
-	element* a = (element*)malloc(sizeof(element) * (index + 1));
-	element* b = (element*)malloc(sizeof(element) * (index + 1));
-
-	// 행렬 크기 저장
-	a[0].row = row;
-	a[0].col = col;
-	a[0].value = index;
-
-	printf("Enter row, column, and value pairs in order:\n");
-
-	// 0이 아닌 항의 개수 만큼 2차원 행렬에 값을 입력
-	for (int i = 1; i <= index; i++)
-	{
-		scanf_s("%d %d %d", &a[i].row, &a[i].col, &a[i].value);
-	}
-
-	// 전치 행렬 실행
-	transpose(a, b);
-
-	// 행렬 결과 출력
-	print_matrix(b);
-	// 동적 메모리 해제
-	free(a);
-	free(b);
-
-	getch();
-*/
