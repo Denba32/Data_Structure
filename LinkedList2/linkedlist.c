@@ -40,7 +40,7 @@ ListNode* insert_first(ListNode* head, element value) {
 ListNode* insert(ListNode* head, int pos, element value) {
 	// 값이 존재하는 상태에서 0번 위치에 값을 넣을 때
 	if (pos == 0) {
-		printf("Move Along the Link: 0\n");
+		printf("\nMove Along the Link: 0\n");
 		head = insert_first(head, value);
 		return head;
 	}
@@ -61,13 +61,13 @@ ListNode* insert(ListNode* head, int pos, element value) {
 				printf("The last index is %d. Insert at the end of the list..\n", count -1);
 				// 해당 Node에 추가할 노드를 Link시킴
 				p->link = addNode;
-				printf("Move along the link: %d\n", count);
+				printf("\nMove along the link: %d\n", count);
 				break;
 			}
 
 			// 해당 위치에 도달 후 Link가 존재하는 경우
 			else if (count == pos && p->link != NULL) {
-				printf("Move Along the Link: %d\n", count);
+				printf("\nMove Along the Link: %d\n", count);
 
 				addNode->link = p->link;
 				p->link = addNode;
@@ -76,7 +76,7 @@ ListNode* insert(ListNode* head, int pos, element value) {
 
 			// 해당 위치에 도달 후 LINK가 NULL인 경우
 			else if (count == pos && p->link == NULL) {
-				printf("Move Along the Link: %d\n", count);
+				printf("\nMove Along the Link: %d\n", count);
 
 				p->link = addNode;
 				break;
@@ -130,14 +130,14 @@ ListNode* delete(ListNode* head, int pos) {
 
 		}
 		else if (pos == count && p->link == NULL) {
-			printf("Move Along the Link: %d\n", count);
+			printf("\nMove Along the Link: %d\n", count);
 			prevNode->link = NULL;
 			free(p);
 			break;
 		}
 		
 		else if (pos == count && p->link != NULL) {
-			printf("Move Along the Link: %d\n", count);
+			printf("\nMove Along the Link: %d\n", count);
 			prevNode->link = p->link;
 
 			free(p);
@@ -192,6 +192,7 @@ int main() {
 			// Empty List이지만 Pos가 0이 아닌 경우
 			if (head == NULL && index != 0) {
 				printf("List is empty. Insert at position 0..\n");
+				printf("\nMove along the link: 0\n");
 				head = insert_first(head, item);
 			}
 
@@ -222,7 +223,7 @@ int main() {
 
 				// 0번을 없애는 경우 head의 Link를 끊는 delete_first를 사용
 				if (index == 0) {
-					printf("Move along the link: %d", index);
+					printf("\nMove along the link: %d", index);
 					head = delete_first(head);
 				}
 				// 그 외
@@ -239,7 +240,7 @@ int main() {
 
 		// Exit
 		else if (selector == 0) {
-			printf("Exit the program.\n");
+			printf("Exit the program.\n----------------------------");
 			exit(1);
 		}
 
