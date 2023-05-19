@@ -35,6 +35,8 @@ int is_empty(QueueType* q)
 int is_full(QueueType* q) {
 	return ((q->rear + 1) % MAX_QUEUE_SIZE == q->front);
 }
+
+
 // 큐 전체 출력
 void queue_print(QueueType* q) {
 	printf("Queue(front = %d rear = %d) = ", q->front, q->rear);
@@ -84,12 +86,16 @@ int main() {
 		printf("===== Menu =====\n1. Input data and Enqueue\n2. Dequeue and Print data\n3. Print Queue\n4. Exit \nSelect number: ");
 		scanf("%d", &selectCount);
 
+
+		// 추가 기능
 		if (selectCount == 1) {
 			printf("\n");
 			printf("Input the data: ");
 			scanf("%d", &data);
 			enqueue(&queue, data);
 		}
+
+		// 2번 삭제 기능
 		else if (selectCount == 2) {
 			if (!is_empty(&queue))
 			{
@@ -100,18 +106,23 @@ int main() {
 				printf("Queue is empty.\n");
 			}
 		}
+
+		// 3번 내용 출력 기능
 		else if (selectCount == 3)
 		{
 			queue_print(&queue);
 		}
+		
+		// 4번 프로그램 종료 기능
 		else if (selectCount == 4)
 		{
 			printf("Exit the program.\n");
 			exit(1);
 		}
+
+		// 그 외 오입력 예외 처리
 		else {
 			printf("잘못된 값을 입력하였습니다.\n");
-			return;
 		}
 	}	
 }
