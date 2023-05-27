@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="arraylinkedlist.c">
+    <ClCompile Include="fruitmanager.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
