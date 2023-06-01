@@ -140,6 +140,7 @@ int main() {
 
 		}
 		else if (count == 0) {
+			printf("Exit the Program\n");
 			exit(1);
 		}
 		else {
